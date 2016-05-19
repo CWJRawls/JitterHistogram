@@ -4,16 +4,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
+import com.sc.rawls.histonet.net.JitMatrixPacket;
 import com.sc.rawls.histonet.net.JitterRecv;
 
 public class Histomain implements KeyListener{
 
 	public static JitterRecv jr;
+	private static JitMatrixPacket jmp;
 	
 	public static void main(String[] args)
 	{
 		try {
-			 jr = new JitterRecv(9955);
+			 jr = new JitterRecv(9955, jmp);
 			
 			Thread t = new Thread(jr);
 			t.start();

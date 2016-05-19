@@ -147,6 +147,89 @@ public class JitMatrixPacket {
 		}
 	}
 	
+	public void setPacketData(byte[] packet)
+	{
+		//find the size of the packet
+				size = (packet[4] << 24) + (packet[5] << 16) + (packet[6] << 8) + (packet[7]);
+				
+				System.out.println("Current Size = " + size);
+				
+				dim = new int[32];
+				dimstride = new int[32];
+				if(size == PCKT_LENGTH)
+				{
+					for(int i = 0; i < packet.length; i+= 4)
+					{
+						System.out.println("i = " + i);
+						if((i <= 16 || i >= 276) && i < 280)
+						{
+							int tInt = ((packet[i] & 0xFF) << 24) + ((packet[i + 1] & 0xFF) << 16) + ((packet[i + 2] & 0xFF) << 8) + (packet[i + 3] & 0xFF);
+							
+							System.out.println("i = " + i + "  tInt = " + tInt);
+							
+							switch(i)
+							{
+							case 0:
+								id = tInt;
+								break;
+							case 8:
+								planecount = tInt;
+								break;
+							case 12:
+								type = tInt;
+								break;
+							case 16:
+								dimcount = tInt;
+								break;
+							case 276:
+								datasize = tInt;
+								break;
+							}
+						}
+						
+						if(i > 16 && i < 148)
+						{
+							for(int j = i; j < 148; j += 4)
+							{
+								dim[(j - 20) / 4] = ((packet[j] & 0xFF) << 24) + ((packet[j + 1] & 0xFF) << 16) + ((packet[j + 2] & 0xFF) << 8) + (packet[j + 3] & 0xFF); 
+							}
+							
+							i = 148;
+						}
+						
+						if(i == 148)
+						{
+							for(int j = i; j < 276; j += 4)
+							{
+								dimstride[(j - 148) / 4] = ((packet[j] & 0xFF) << 24) + ((packet[j + 1] & 0xFF) << 16) + ((packet[j + 2] & 0xFF) << 8) + (packet[j + 3] & 0xFF); 
+							}
+							
+							i = 272;
+						}
+						/*
+						if(i == 276)
+						{
+							datasize = ((packet[276] & 0xFF) << 24) +  ((packet[277] & 0xFF) << 16) + ((packet[278] & 0xFF) << 8) + ((packet[279] & 0xFF)); 
+						}
+						*/
+						
+						if(i == 280)
+						{
+							byte[] timeB = {packet[280], packet[281], packet[282], packet[283], packet[284], packet[285], packet[286], packet[287]};
+							time = ByteBuffer.wrap(timeB).getDouble();
+						}
+					}
+					
+					hasData = true;
+					
+					if(matrix != null && datasize == matrix.length)
+					{
+						hasMatrixData = true;
+					}
+				}
+				
+	}
+	
 	public int getPlaneCount()
 	{
 		return planecount;

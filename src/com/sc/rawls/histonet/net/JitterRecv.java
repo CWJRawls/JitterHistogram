@@ -22,11 +22,13 @@ public class JitterRecv implements Runnable{
 	//socket for listening to things sent by jitter.
 	private ServerSocket jit_sock;
 	private Socket connect_sock;
+	private JitMatrixPacket jmp;
 	
-	public JitterRecv(int port) throws IOException
+	public JitterRecv(int port, JitMatrixPacket jmp) throws IOException
 	{
 		jit_sock = new ServerSocket(port);
 		connect_sock = jit_sock.accept();
+		this.jmp = jmp;
 	}
 	
 	@Override
@@ -79,7 +81,7 @@ public class JitterRecv implements Runnable{
 					byte[] mat_data = new byte[288];
 					datain.readFully(mat_data);
 					
-					JitMatrixPacket jmp = new JitMatrixPacket(mat_data);
+					jmp.setPacketData(mat_data);
 					
 					System.out.println(jmp.hasData());
 					
