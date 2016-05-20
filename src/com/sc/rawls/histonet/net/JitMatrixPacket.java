@@ -303,11 +303,54 @@ public class JitMatrixPacket {
 	
 	public int getDimcount()
 	{
-		return dimcount;
+		if(hasData)
+			return dimcount;
+		else
+			return -1;
 	}
 	
 	public double getTime()
 	{
-		return time;
+		if(hasData)
+			return time;
+		else
+			return -1;
+	}
+
+	public int getID()
+	{
+		if(hasData)
+			return id;
+		else
+			return -1;
+	}
+
+	public int[] getDims()
+	{
+		return dim;
+	}
+	
+	public int[] getDimstride()
+	{
+		return dimstride;
+	}
+	
+	public void clone(JitMatrixPacket jmp)
+	{
+		id = jmp.getID();
+		datasize = jmp.getSizeInBytes();
+		planecount = jmp.getPlaneCount();
+		
+		if(jmp.hasMatrixData())
+				setMatrixData(jmp.getByteArray());
+		
+		type = jmp.getType();
+		time = jmp.getTime();
+		
+		dim = jmp.getDims().clone();
+		dimstride = jmp.getDimstride().clone();
+		
+		hasData = jmp.hasData();
+		hasMatrixData = jmp.hasMatrixData();
 	}
 }

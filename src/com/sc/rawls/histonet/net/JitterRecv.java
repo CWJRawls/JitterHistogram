@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.sc.rawls.histonet.data.PacketQueue;
+
 public class JitterRecv implements Runnable{
 
 	public static final String JMATRIX = "JMTX"; //packet identifier for receiving a matrix
@@ -22,13 +24,14 @@ public class JitterRecv implements Runnable{
 	//socket for listening to things sent by jitter.
 	private ServerSocket jit_sock;
 	private Socket connect_sock;
+	private PacketQueue pq;
 	private JitMatrixPacket jmp;
 	
-	public JitterRecv(int port, JitMatrixPacket jmp) throws IOException
+	public JitterRecv(int port, PacketQueue pq) throws IOException
 	{
 		jit_sock = new ServerSocket(port);
 		connect_sock = jit_sock.accept();
-		this.jmp = jmp;
+		jmp = new JitMatrixPacket();
 	}
 	
 	@Override
@@ -73,6 +76,8 @@ public class JitterRecv implements Runnable{
 				
 				if(id.equals(JMATRIX) && size == 288)
 				{
+					
+					jmp = new JitMatrixPacket();
 					//datain.skipBytes(24);
 					System.out.println("Incoming Matrix!");
 					int avail = datain.available();
@@ -114,7 +119,7 @@ public class JitterRecv implements Runnable{
 					System.out.println(jmp.hasMatrixData());
 					System.out.println(jmp.getSizeInBytes());
 					System.out.println("PlaneCount = " + jmp.getPlaneCount());
-					
+					pq.add(jmp);
 				}
 				else if(id.equals(JMESS))
 				{
