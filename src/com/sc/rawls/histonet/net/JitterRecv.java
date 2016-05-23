@@ -32,6 +32,7 @@ public class JitterRecv implements Runnable{
 		jit_sock = new ServerSocket(port);
 		connect_sock = jit_sock.accept();
 		jmp = new JitMatrixPacket();
+		this.pq = pq;
 	}
 	
 	@Override
@@ -136,6 +137,7 @@ public class JitterRecv implements Runnable{
 					
 					//add the matrix to the queue
 					pq.add(jmp);
+					System.out.println("Queue Has Another Packet? " + pq.hasNext());
 				}
 				else if(id.equals(JMESS))
 				{
